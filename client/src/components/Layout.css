@@ -1,0 +1,48 @@
+* {
+  box-sizing: border-box;
+}
+
+.layout {
+  display: flex;
+  height: 100vh;
+  background: #0f172a;
+  color: #fff;
+}
+
+.sidebar {
+  width: 230px;
+  background: #111827;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar h2 {
+  color: #38bdf8;
+  margin-bottom: 40px;
+}
+
+.sidebar button {
+  background: none;
+  border: none;
+  color: #e5e7eb;
+  padding: 12px 0;
+  text-align: left;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.sidebar button:hover {
+  color: #38bdf8;
+}
+
+.logout {
+  margin-top: auto;
+  color: #ef4444;
+}
+
+.content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}

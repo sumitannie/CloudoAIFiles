@@ -1,0 +1,124 @@
+.dashboard-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  margin-bottom: var(--spacing-lg);
+}
+
+.dashboard-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.dashboard-controls {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.dashboard-controls input,
+.dashboard-controls select {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+}
+
+.dashboard-controls input {
+  flex: 1;
+  min-width: 280px;
+  background: var(--bg-white);
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+}
+
+.dashboard-controls input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.dashboard-controls input::placeholder {
+  color: var(--text-muted);
+}
+
+.dashboard-controls select {
+  background: var(--bg-white);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dashboard-controls select:focus {
+  border-color: var(--color-primary);
+}
+
+.files-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.pagination {
+  margin-top: var(--spacing-xl);
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+}
+
+.pagination button {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.pagination button:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.error {
+  color: var(--color-danger);
+}
+
+.loading,
+.empty {
+  color: var(--text-secondary);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .dashboard-controls {
+    flex-direction: column;
+  }
+
+  .dashboard-controls input {
+    min-width: 100%;
+  }
+
+  .files-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--spacing-md);
+  }
+}

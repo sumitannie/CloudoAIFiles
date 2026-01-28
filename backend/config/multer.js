@@ -1,0 +1,20 @@
+import multer from "multer";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import cloudinary from "./cloudinary.js";
+
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "fileVault",
+    resource_type: "auto", //  THIS enables ALL file types
+  },
+});
+
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB limit (can change)
+  },
+});
+
+export default upload;
