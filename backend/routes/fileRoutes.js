@@ -11,7 +11,6 @@ import {
   getTrashFiles,
 } from "../controllers/fileController.js";
 
-import { getSmartSuggestions } from "../controllers/fileController.js";
 
 const router = express.Router();
 
@@ -26,10 +25,6 @@ router.delete("/permanent/:id", authMiddleware, deleteForever);
 
 router.delete("/:id", authMiddleware, deleteFile);
 
-
-
-//smart suggestions API:
-router.get("/ai/suggestions", authMiddleware, getSmartSuggestions);
 
 export default router;
 

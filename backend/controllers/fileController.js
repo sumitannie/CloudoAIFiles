@@ -1,8 +1,7 @@
 import File from "../models/File.js";
 import cloudinary from "../config/cloudinary.js";
 import fs from "fs";
-import { classifyFile, generateSemanticTokens } from "../utils/fileClassifier.js";
-import { generateSmartSuggestions } from "../utils/smartSuggestions.js";
+import { classifyFile } from "../utils/fileClassifier.js";
 
 // ---------------- UPLOAD FILES ----------------
 export const uploadFile = async (req, res) => {
@@ -38,7 +37,6 @@ export const uploadFile = async (req, res) => {
         file.mimetype,
       );
       
-      const semanticTokens = generateSemanticTokens(category);
 
       // 4️⃣ Save metadata in mongoDB
       const newFile = await File.create({
@@ -55,8 +53,6 @@ export const uploadFile = async (req, res) => {
         confidence,
         tags,
         importance,
-
-        semanticTokens,
 
       });
 
@@ -263,22 +259,4 @@ export const getTrashFiles = async (req, res) => {
 //   }
 // };
 
-//Smart Suggestions AI controller
 
-export const getSmartSuggestions = async (req, res) => {
-  try {
-    const files = await File.find({
-      owner: req.userId,
-      isDeleted: false,
-    });
-
-    const suggestions = generateSmartSuggestions(files);
-
-    res.json({
-      count: suggestions.length,
-      suggestions,
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
