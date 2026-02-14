@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import API, { filesAPI } from "../api/api";
 import FileCard from "../components/FileCard";
-import AutoCollectionsSidebar from "../components/AutoCollectionsSidebar";
 import "../styles/dashboard.css";
 
 export default function Dashboard() {
@@ -15,11 +15,13 @@ export default function Dashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const [activeCollection, setActiveCollection] = useState(null);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  const folderFromURL = searchParams.get("folder");
 
   const limit = 12;
 
-  // ---------------- FETCH FILES ----------------
   const fetchFiles = async () => {
     setLoading(true);
     setError("");
@@ -32,7 +34,6 @@ export default function Dashboard() {
       setFiles(res.data.files || []);
       setTotalPages(res.data.totalPages || 1);
     } catch (err) {
-      console.error("Fetch files error:", err);
       setError("Failed to load files.");
     } finally {
       setLoading(false);
@@ -43,72 +44,27 @@ export default function Dashboard() {
     fetchFiles();
   }, [currentPage]);
 
-  // ---------------- AUTO COLLECTIONS (AI LOGIC) ----------------
-  const now = Date.now();
-  const sevenDays = 7 * 24 * 60 * 60 * 1000;
-
-  const collections = {
-    job: files.filter(
-      (f) =>
-        f.category === "resume" ||
-        f.tags?.includes("career") ||
-        f.importance === "high"
-    ),
-
-    certificates: files.filter(
-      (f) => f.category === "certificate"
-    ),
-
-    study: files.filter(
-      (f) => f.category === "notes" || f.category === "project"
-    ),
-
-    media: files.filter(
-      (f) => f.resourceType === "image" || f.resourceType === "video"
-    ),
-
-    important: files.filter(
-      (f) => f.importance === "high"
-    ),
-
-    documents: files.filter(
-      (f) => f.resourceType === "raw" && f.mimeType !== undefined
-    ),
-
-    recent: files.filter(
-      (f) => now - new Date(f.createdAt).getTime() <= sevenDays
-    ),
-  };
-
-  // ---------------- DELETE FILE ----------------
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this file?")) return;
-
-    try {
-      await filesAPI.deleteFile(id);
-      fetchFiles();
-    } catch (err) {
-      console.error("Delete error:", err);
-      alert("Failed to delete file");
-    }
+    await filesAPI.deleteFile(id);
+    fetchFiles();
   };
 
-  // ---------------- FILE TYPE FILTER ----------------
   const getFileCategory = (name = "") => {
     const ext = name.split(".").pop()?.toLowerCase();
-
     if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext)) return "image";
     if (ext === "pdf") return "pdf";
     if (["doc", "docx", "txt"].includes(ext)) return "doc";
-
     return "other";
   };
 
-  // ---------------- DISPLAY LOGIC ----------------
-  const displayedFiles = activeCollection
-    ? collections[activeCollection] || []
+  /* ✅ FILTER FILES */
+
+  const displayedFiles = folderFromURL
+    ? files.filter(file => file.folder === folderFromURL)
     : files.filter((file) => {
         const name = file.originalName || "";
+
         const matchesSearch = name
           .toLowerCase()
           .includes(searchQuery.toLowerCase());
@@ -120,22 +76,10 @@ export default function Dashboard() {
         return matchesSearch && matchesType;
       });
 
-  // ---------------- COLLECTION HANDLERS ----------------
-  const openCollection = (key) => {
-    setActiveCollection(key);
-    setSearchQuery("");
-    setFilterType("all");
-    setCurrentPage(1);
+  const clearFolderFilter = () => {
+    navigate("/dashboard");
   };
 
-  const clearCollection = () => {
-    setActiveCollection(null);
-    setSearchQuery("");
-    setFilterType("all");
-    setCurrentPage(1);
-  };
-
-  // ---------------- UI ----------------
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
@@ -143,79 +87,86 @@ export default function Dashboard() {
         <p>Manage and organize your uploads</p>
       </div>
 
-      <div style={{ display: "flex", gap: "24px" }}>
-        <AutoCollectionsSidebar
-          active={activeCollection}
-          onSelect={(key) => (key ? openCollection(key) : clearCollection())}
-          collections={collections}
-        />
+      <div style={{ flex: 1 }}>
+        <div className="dashboard-controls">
+          <input
+            type="text"
+            placeholder="Search files by name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            disabled={!!folderFromURL}
+          />
 
-        <div style={{ flex: 1 }}>
-          <div className="dashboard-controls">
-            <input
-              type="text"
-              placeholder="Search files by name..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              disabled={!!activeCollection}
-            />
-
-            <select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              disabled={!!activeCollection}
-            >
-              <option value="all">All</option>
-              <option value="image">Images</option>
-              <option value="pdf">PDFs</option>
-              <option value="doc">Documents</option>
-            </select>
-          </div>
-
-          {error && <p className="error">{error}</p>}
-
-          {loading ? (
-            <p className="loading">Loading files...</p>
-          ) : displayedFiles.length === 0 ? (
-            <p className="empty">No files found</p>
-          ) : (
-            <>
-              <div className="files-grid">
-                {displayedFiles.map((file) => (
-                  <FileCard
-                    key={file._id}
-                    file={file}
-                    onDelete={() => handleDelete(file._id)}
-                  />
-                ))}
-              </div>
-
-              {!activeCollection && totalPages > 1 && (
-                <div className="pagination">
-                  <button
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  >
-                    Prev
-                  </button>
-
-                  <span>
-                    Page {currentPage} of {totalPages}
-                  </span>
-
-                  <button
-                    disabled={currentPage === totalPages}
-                    onClick={() =>
-                      setCurrentPage((p) => Math.min(totalPages, p + 1))
-                    }
-                  >
-                    Next
-                  </button>
-                </div>
-              )}
-            </>
-          )}
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            disabled={!!folderFromURL}
+          >
+            <option value="all">All</option>
+            <option value="image">Images</option>
+            <option value="pdf">PDFs</option>
+            <option value="doc">Documents</option>
+          </select>
         </div>
+
+        {/* ✅ Folder breadcrumb */}
+        {folderFromURL && (
+          <div className="folder-breadcrumb">
+            <button onClick={clearFolderFilter}>
+              ← Back to All Files
+            </button>
+            <span>📁 {folderFromURL}</span>
+          </div>
+        )}
+
+        {error && <p className="error">{error}</p>}
+
+        {loading ? (
+          <p className="loading">Loading files...</p>
+        ) : displayedFiles.length === 0 ? (
+          <p className="empty">No files found</p>
+        ) : (
+          <>
+            <div className="files-grid">
+              {displayedFiles.map((file) => (
+                <FileCard
+                  key={file._id}
+                  file={file}
+                  onDelete={() => handleDelete(file._id)}
+                />
+              ))}
+            </div>
+
+            {/* pagination disabled inside folder */}
+            {!folderFromURL && totalPages > 1 && (
+              <div className="pagination">
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() =>
+                    setCurrentPage((p) => Math.max(1, p - 1))
+                  }
+                >
+                  Prev
+                </button>
+
+                <span>
+                  Page {currentPage} of {totalPages}
+                </span>
+
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() =>
+                    setCurrentPage((p) =>
+                      Math.min(totalPages, p + 1)
+                    )
+                  }
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

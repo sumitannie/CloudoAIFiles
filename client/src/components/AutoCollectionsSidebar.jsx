@@ -2,72 +2,38 @@ import "../styles/collectionsSidebar.css";
 
 export default function AutoCollectionsSidebar({
   active,
+  folders,
+  counts,
   onSelect,
-  collections,
+  onClear,
 }) {
+  if (!folders || folders.length === 0) {
+    return (
+      <div className="collections-sidebar">
+        <h4>AI Folders</h4>
+        <p className="empty-folders">No folders yet</p>
+      </div>
+    );
+  }
+
   return (
     <div className="collections-sidebar">
-      <h4>AI Collections</h4>
+      <h4>AI Folders</h4>
 
-      <button
-        className={active === "job" ? "active" : ""}
-        onClick={() => onSelect("job")}
-      >
-        💼 Job Documents
-        <span>{collections.job.length}</span>
-      </button>
-
-      <button
-        className={active === "certificates" ? "active" : ""}
-        onClick={() => onSelect("certificates")}
-      >
-        📜 Certificates
-        <span>{collections.certificates.length}</span>
-      </button>
-
-      <button
-        className={active === "study" ? "active" : ""}
-        onClick={() => onSelect("study")}
-      >
-        📚 Study Materials
-        <span>{collections.study.length}</span>
-      </button>
-
-      <button
-        className={active === "media" ? "active" : ""}
-        onClick={() => onSelect("media")}
-      >
-        🖼️ Media
-        <span>{collections.media.length}</span>
-      </button>
-
-      <button
-        className={active === "important" ? "active" : ""}
-        onClick={() => onSelect("important")}
-      >
-        ⭐ Important Files
-        <span>{collections.important.length}</span>
-      </button>
-
-      <button
-        className={active === "documents" ? "active" : ""}
-        onClick={() => onSelect("documents")}
-      >
-        📄 Documents
-        <span>{collections.documents.length}</span>
-      </button>
-
-      <button
-        className={active === "recent" ? "active" : ""}
-        onClick={() => onSelect("recent")}
-      >
-        🕒 Recent Uploads
-        <span>{collections.recent.length}</span>
-      </button>
+      {folders.map((name) => (
+        <button
+          key={name}
+          className={active === name ? "active" : ""}
+          onClick={() => onSelect(name)}
+        >
+          📁 {name}
+          <span>{counts[name]?.length || 0}</span>
+        </button>
+      ))}
 
       {active && (
-        <button className="clear" onClick={() => onSelect(null)}>
-          ✕ Clear
+        <button className="clear" onClick={onClear}>
+          ✕ Clear Filter
         </button>
       )}
     </div>

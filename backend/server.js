@@ -3,7 +3,6 @@ import authRoutes from "./routes/authRoutes.js";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import imageRoutes from "./routes/imageRoutes.js";
 import fileRoutes from "./routes/fileRoutes.js";
 
 dotenv.config();
@@ -19,8 +18,6 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
-
-app.use("/api/images", imageRoutes);
 
 app.use("/api/files", fileRoutes);
 

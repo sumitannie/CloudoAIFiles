@@ -92,3 +92,17 @@
   color: #c0392b;
   font-weight: 600;
 }
+
+
+/* AI Feature Highlight */
+.sidebar-nav a[href="/ai-folders"] {
+  color: rgba(24, 23, 23, 0.711);
+  background: linear-gradient(90deg, rgba(270, 23, 86, 0.15), transparent);
+  border-left: 3px solid #6366f1;
+  font-weight: 600;
+}
+
+.sidebar-nav a[href="/ai-folders"]:hover {
+  color: black;
+  background: linear-gradient(90deg, rgba(217, 29, 117, 0.25), transparent);
+}

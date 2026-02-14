@@ -7,7 +7,7 @@ function Sidebar() {
 
   const handleLogout = () => {
     localStorage.removeItem("token")
-    navigate("/login")
+    navigate("/")
   }
 
   return (
@@ -19,8 +19,8 @@ function Sidebar() {
       <nav className="sidebar-nav">
         {/* My Files */}
         <Link
-          to="/"
-          className={location.pathname === "/" ? "active" : ""}
+          to="/dashboard"
+          className={location.pathname === "/dashboard" ? "active" : ""}
         >
           <span className="icon">📁</span>
           My Files
@@ -42,6 +42,14 @@ function Sidebar() {
         >
           <span className="icon">🗑️</span>
           Trash
+        </Link>
+
+        <Link
+        to="/ai-folders"
+        className={location.pathname === "/ai-folders" ? "active" : ""}
+        >
+          <span className="icon">⚡</span>
+        AI-powered Folders
         </Link>
       </nav>
 

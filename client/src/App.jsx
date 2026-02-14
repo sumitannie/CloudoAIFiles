@@ -1,26 +1,21 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
 import Dashboard from "./pages/Dashboard";
 import Upload from "./pages/Upload";
+import Trash from "./pages/Trash";
 
 import Layout from "./components/Layout";
 import PrivateRoute from "./components/PrivateRoute";
 
-import Trash from "./pages/Trash";
-
+import AIFolders from "./pages/AIFolders";
 
 import "./styles/globals.css";
-// import "./styles/fileCard.css";
-// import "./styles/dashboard.css";
-// import "./styles/layout.css";
-// import "./styles/globals.css";
-// import "./styles/navbar.css";
-// import "./styles/sidebar.css";
-// import "./styles/upload.css";
 
-// Small helper
+// Redirect logged-in users away from auth pages
 const RedirectIfAuth = ({ children }) => {
   const token = localStorage.getItem("token");
   return token ? <Navigate to="/" replace /> : children;
@@ -31,7 +26,10 @@ function App() {
     <BrowserRouter>
       <Routes>
 
-        {/* Public (redirect if already logged in) */}
+        {/* ---------- LANDING ---------- */}
+        <Route path="/" element={<Landing />} />
+
+        {/* ---------- AUTH ---------- */}
         <Route
           path="/login"
           element={
@@ -50,23 +48,22 @@ function App() {
           }
         />
 
-        {/* Protected */}
+        {/* ---------- PROTECTED ---------- */}
         <Route
-          path="/"
           element={
             <PrivateRoute>
               <Layout />
             </PrivateRoute>
           }
         >
-          <Route index element={<Dashboard />} />
-          <Route path="upload" element={<Upload />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/upload" element={<Upload />} />
+          <Route path="/trash" element={<Trash />} />
+          <Route path="/ai-folders" element={<AIFolders />} />
         </Route>
 
-        {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" />} />
-
-        <Route path="trash" element={<Trash />} />
+        {/* ---------- FALLBACK ---------- */}
+        <Route path="*" element={<Navigate to="/" replace />} />
 
       </Routes>
     </BrowserRouter>

@@ -16,7 +16,7 @@ export default function Login() {
     try {
       const res = await API.post("/auth/login", { email, password });
       localStorage.setItem("token", res.data.token);
-      navigate("/");
+      navigate("/dashboard");
     } catch (err) {
       setError("Invalid email or password");
     }

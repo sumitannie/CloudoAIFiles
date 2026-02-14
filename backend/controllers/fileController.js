@@ -1,70 +1,105 @@
 import File from "../models/File.js";
-import cloudinary from "../config/cloudinary.js";
-import fs from "fs";
+import axios from "axios";
 import { classifyFile } from "../utils/fileClassifier.js";
+import { analyzeDocumentWithAI } from "../utils/geminiAI.js";
+import { extractText } from "../utils/textExtractor.js";
 
-// ---------------- UPLOAD FILES ----------------
 export const uploadFile = async (req, res) => {
   try {
-    // 1️⃣ Check files
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ msg: "No file uploaded" });
     }
 
     const savedFiles = [];
 
-    // 2️⃣ Loop through all uploaded files
     for (const file of req.files) {
-      // 3️⃣ Upload to Cloudinary (auto = image/pdf/doc/etc)
-      // Decide resource type manually (FIX for PDF issue)
-     let resourceType = "raw";
+      const fileUrl = file.path;
+      const publicId = file.filename;
 
-     if (file.mimetype && file.mimetype.startsWith("image/")) {
-     resourceType = "image";
-     } else if (file.mimetype && file.mimetype.startsWith("video/")) {
-     resourceType = "video";
-
-     }
-
-     // Upload to Cloudinary with correct resource type
-     const result = await cloudinary.uploader.upload(file.path, {
-     resource_type: resourceType,
-     folder: "fileVault",
-     });
-      //smart intelligence features
-      const {category, confidence, tags, importance} = classifyFile(
-        file.originalname,
-        file.mimetype,
-      );
-      
-
-      // 4️⃣ Save metadata in mongoDB
-      const newFile = await File.create({
-        originalName: file.originalname,
-        url: result.secure_url,
-        public_id: result.public_id,
-        resourceType: resourceType,
-        mimeType: file.mimetype,
-        size: file.size,
-        owner: req.userId,
-
-        //AI fields
+      const {
         category,
         confidence,
         tags,
         importance,
+      } = classifyFile(file.originalname, file.mimetype);
 
+      let aiCategory = null;
+      let aiTags = tags;
+      let aiImportance = importance;
+      let aiFolder = "General";
+      let aiSummary = null;
+
+      if (file.mimetype.startsWith("image/")) {
+        aiFolder = "Images";
+        aiCategory = "Media";
+        aiSummary = "Image file";
+      } else if (file.mimetype.startsWith("video/")) {
+        aiFolder = "Videos";
+        aiCategory = "Media";
+        aiSummary = "Video file";
+      }
+      else if (
+        file.mimetype.includes("pdf") ||
+        file.mimetype.includes("word") ||
+        file.mimetype.includes("text")
+      ) {
+        try {
+          const response = await axios.get(fileUrl, {
+            responseType: "arraybuffer",
+          });
+
+          const text = await extractText(
+            Buffer.from(response.data),
+            file.mimetype
+          );
+
+          console.log("========= TEXT EXTRACTED =========");
+          console.log(text.slice(0, 200));
+          console.log("==================================");
+
+          if (text && text.length > 50) {
+            const aiResult = await analyzeDocumentWithAI(text);
+
+            console.log("AI OUTPUT:", aiResult);
+
+            if (aiResult?.category) aiCategory = aiResult.category;
+            if (aiResult?.folder) aiFolder = aiResult.folder;
+            if (aiResult?.summary) aiSummary = aiResult.summary;
+            if (aiResult?.tags) aiTags = aiResult.tags;
+          }
+        } catch (err) {
+          console.log("AI analysis skipped");
+        }
+      }
+
+      const newFile = await File.create({
+        originalName: file.originalname,
+        url: fileUrl,
+        public_id: publicId,
+        resourceType: file.mimetype.startsWith("image/")
+          ? "image"
+          : file.mimetype.startsWith("video/")
+          ? "video"
+          : "raw",
+        mimeType: file.mimetype,
+        size: file.size,
+        owner: req.userId,
+
+        // system classification
+        category,
+
+        // AI intelligence
+        aiCategory,
+        confidence,
+        tags: aiTags,
+        importance: aiImportance,
+        folder: aiFolder,
+        aiSummary,
       });
 
       savedFiles.push(newFile);
-
-      // 5️⃣ SAFELY delete local temp file
-      if (file.path && fs.existsSync(file.path)) {
-        fs.unlinkSync(file.path);
-      }
     }
 
-    // 6️⃣ Response
     res.status(201).json({
       msg: "Files uploaded successfully",
       files: savedFiles,
@@ -75,18 +110,15 @@ export const uploadFile = async (req, res) => {
   }
 };
 
-
-//adding pagination - showinig/loading only 10 files at a time
 export const getMyFiles = async (req, res) => {
   try {
     const page = Number.parseInt(req.query.page) || 1;
     const limit = Number.parseInt(req.query.limit) || 10;
-
     const skip = (page - 1) * limit;
 
     const query = {
       owner: req.userId,
-      isDeleted: false
+      isDeleted: false,
     };
 
     const totalFiles = await File.countDocuments(query);
@@ -101,15 +133,13 @@ export const getMyFiles = async (req, res) => {
       limit,
       totalFiles,
       totalPages: Math.ceil(totalFiles / limit),
-      files
+      files,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-
-// ---------------- DELETE FILE ----------------
 export const deleteFile = async (req, res) => {
   try {
     const file = await File.findById(req.params.id);
@@ -118,113 +148,61 @@ export const deleteFile = async (req, res) => {
     if (file.owner.toString() !== req.userId) {
       return res.status(403).json({ msg: "Not authorized" });
     }
-    
-    // SOFT DELETE
+
     file.isDeleted = true;
     file.deletedAt = new Date();
-
     await file.save();
 
     res.json({ msg: "File moved to trash successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-    
 };
 
-//----- to restore files  ->
-export const restoreFile = async(req, res) => {
-   const file = await File.findById(req.params.id);
-
-   if(!file)return res.status(404).json({msg: "File not found"});
-
-   if (file.owner.toString() !== req.userId)
-    return res.status(403).json({ msg: "Not authorized" });
-
-  file.isDeleted = false;
-  file.deletedAt = null;
-
-  await file.save();
-
-  res.json({ msg: "File restored successfully" });
-};
-
-//----delete forever logic->
-export const deleteForever = async (req, res) => {
+export const restoreFile = async (req, res) => {
   const file = await File.findById(req.params.id);
-
   if (!file) return res.status(404).json({ msg: "File not found" });
 
   if (file.owner.toString() !== req.userId)
     return res.status(403).json({ msg: "Not authorized" });
 
-  await cloudinary.uploader.destroy(file.public_id, {
-    resource_type: file.resourceType,
-  });
+  file.isDeleted = false;
+  file.deletedAt = null;
+  await file.save();
+
+  res.json({ msg: "File restored successfully" });
+};
+
+export const deleteForever = async (req, res) => {
+  const file = await File.findById(req.params.id);
+  if (!file) return res.status(404).json({ msg: "File not found" });
+
+  if (file.owner.toString() !== req.userId)
+    return res.status(403).json({ msg: "Not authorized" });
 
   await file.deleteOne();
 
   res.json({ msg: "File permanently deleted" });
 };
 
-
-// ---------------- SEARCH FILES ----------------
 export const searchFiles = async (req, res) => {
   try {
-    const {
-      q,
-      category,
-      type,
-      minSize,
-      maxSize,
-      from,
-      to,
-    } = req.query;
+    const { q } = req.query;
 
-    // Base query: only user's files
-    const query = { owner: req.userId };
+    const query = { owner: req.userId, isDeleted: false };
 
-    // 🔍 Name search
     if (q) {
       query.originalName = { $regex: q, $options: "i" };
     }
 
-    // 🧠 Category search
-    if (category) {
-      query.category = category;
-    }
-
-    // 📄 Type search (image/pdf/doc)
-    if (type) {
-      query.mimeType = { $regex: `^${type}`, $options: "i" };
-    }
-
-    // 📦 Size search
-    if (minSize || maxSize) {
-      query.size = {};
-      if (minSize) query.size.$gte = Number(minSize);
-      if (maxSize) query.size.$lte = Number(maxSize);
-    }
-
-    // 🕒 Date search
-    if (from || to) {
-      query.createdAt = {};
-      if (from) query.createdAt.$gte = new Date(from);
-      if (to) query.createdAt.$lte = new Date(to);
-    }
-
     const files = await File.find(query).sort({ createdAt: -1 });
 
-    res.json({
-      count: files.length,
-      files,
-    });
+    res.json({ files });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// ---------------- GET TRASH FILES ----------------
 export const getTrashFiles = async (req, res) => {
   try {
     const files = await File.find({
@@ -237,26 +215,3 @@ export const getTrashFiles = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
-// // SEMANTIC SEARCH API
-
-// export const semanticSearch = async (req, res) => {
-//   try {
-//     const { q } = req.query;
-//     if (!q) return res.json({ files: [] });
-
-//     const words = q.toLowerCase().split(" ");
-
-//     const files = await File.find({
-//       owner: req.userId,
-//       isDeleted: false,
-//       semanticTokens: { $in: words },
-//     });
-
-//     res.json({ files });
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
-
-

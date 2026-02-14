@@ -14,19 +14,16 @@ const fileSchema = new mongoose.Schema(
       required: true,
     },
 
-    // 🧠 AI Intelligence
+    // SYSTEM FILE TYPE (basic detection)
     category: {
       type: String,
-      enum: [
-        "resume",
-        "image",
-        "certificate",
-        "project",
-        "notes",
-        "document",
-        "other",
-      ],
-      default: "other",
+      default: "document",
+    },
+
+    // AI TOPIC CLASSIFICATION (dynamic)
+    aiCategory: {
+      type: String,
+      default: null,
     },
 
     confidence: {
@@ -45,13 +42,25 @@ const fileSchema = new mongoose.Schema(
       default: "normal",
     },
 
+    // AI GENERATED FOLDER
+    folder: {
+      type: String,
+      default: "General",
+    },
+
+    // AI SUMMARY
+    aiSummary: {
+      type: String,
+      default: null,
+    },
+
     resourceType: {
       type: String,
       enum: ["image", "raw", "video"],
       required: true,
     },
 
-    // 🗑 Trash system
+    // Trash system
     isDeleted: {
       type: Boolean,
       default: false,
@@ -63,15 +72,14 @@ const fileSchema = new mongoose.Schema(
     },
 
     lastAccessedAt: {
-    type: Date,
-    default: null,
+      type: Date,
+      default: null,
     },
 
     accessCount: {
-    type: Number,
-    default: 0,
+      type: Number,
+      default: 0,
     },
-
   },
   { timestamps: true }
 );

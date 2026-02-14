@@ -6,7 +6,7 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: "fileVault",
-    resource_type: "auto", //  THIS enables ALL file types
+    resource_type: "auto", 
   },
 });
 
