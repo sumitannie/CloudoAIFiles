@@ -1,6 +1,6 @@
-# 🚀 CloudoFilesAI
+# 🚀 CloudoAIFiles
 
-An AI-powered smart file manager that automatically organizes your uploads into intelligent folders based on the file content.
+An AI-powered smart file manager that automatically reads your files and organizes your uploads into intelligent folders based on the unique file content.
 
 Upload documents, images, resumes, projects, and more — the system reads content, understands context, and organizes everything for you.
 
@@ -15,7 +15,6 @@ Upload documents, images, resumes, projects, and more — the system reads conte
 * Auto-generates:
 
   * 📁 Folder name
-  * 🏷 Tags
   * 📂 Category
 
 ---
@@ -204,8 +203,10 @@ npm run dev
 
 ## 📸 Screenshots
 
-*(Add screenshots here for GitHub)*
-
+![alt text](<Screenshot (996).png>)
+![alt text](<Screenshot (993).png>)
+![alt text](<Screenshot (994).png>)
+![alt text](<Screenshot (995).png>)
 ---
 
 ## 🚀 Future Improvements

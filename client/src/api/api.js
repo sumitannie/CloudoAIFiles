@@ -33,8 +33,10 @@ export const authAPI = {
 
 // File APIs
 export const filesAPI = {
-  getFiles: (params) => api.get("/files", { params }),
+  getFiles: (params) => api.get("/files/my-files", { params }),
+  searchFiles: (query) => api.get("/files/search", { params: { q: query } }),
   getTrash: () => api.get("/files/trash"),
+  emptyTrash: () => api.delete("/files/empty-trash"),
   uploadFiles: (formData, onUploadProgress) =>
     api.post("/files/upload", formData, {
       headers: { "Content-Type": "multipart/form-data" },

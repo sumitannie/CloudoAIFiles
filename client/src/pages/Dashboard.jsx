@@ -11,6 +11,7 @@ export default function Dashboard() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState("all");
+  const [sortOrder, setSortOrder] = useState("newest"); // Added sort state
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -28,7 +29,11 @@ export default function Dashboard() {
 
     try {
       const res = await API.get("/files/my-files", {
-        params: { page: currentPage, limit },
+        params: { 
+          page: currentPage, 
+          limit,
+          sort: sortOrder // Pass sort param to backend
+        },
       });
 
       setFiles(res.data.files || []);
@@ -42,7 +47,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchFiles();
-  }, [currentPage]);
+  }, [currentPage, sortOrder]); // Trigger fetch on sort change
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this file?")) return;
@@ -97,16 +102,27 @@ export default function Dashboard() {
             disabled={!!folderFromURL}
           />
 
-          <select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            disabled={!!folderFromURL}
-          >
-            <option value="all">All</option>
-            <option value="image">Images</option>
-            <option value="pdf">PDFs</option>
-            <option value="doc">Documents</option>
-          </select>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              disabled={!!folderFromURL}
+            >
+              <option value="all">All</option>
+              <option value="image">Images</option>
+              <option value="pdf">PDFs</option>
+              <option value="doc">Documents</option>
+            </select>
+
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              disabled={!!folderFromURL}
+            >
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+            </select>
+          </div>
         </div>
 
         {/* ✅ Folder breadcrumb */}

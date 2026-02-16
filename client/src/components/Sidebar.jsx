@@ -13,7 +13,7 @@ function Sidebar() {
   return (
     <div className="sidebar">
       <div className="sidebar-header">
-        <h2>📁 CloudoFilesAI </h2>
+        <h2>📁 CloudoAIFiles </h2>
       </div>
 
       <nav className="sidebar-nav">

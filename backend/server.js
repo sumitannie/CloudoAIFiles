@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Test route
 app.get("/", (req, res) => {
-  res.send("Image Vault Backend Running");
+  res.send("CloudoFilesAI Backend Running");
 });
 
 app.use("/api/auth", authRoutes);

@@ -116,15 +116,36 @@ export const getMyFiles = async (req, res) => {
     const limit = Number.parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
+    const sortBy = req.query.sort || 'newest';
+
+    let sortOptions = {};
+    if(sortBy === 'oldest')
+    {
+       sortOptions = { createdAt: 1}; //old -> new
+    }
+    else
+    {
+       sortOptions = {createdAt: -1}; //new -> old: default
+    }
+
     const query = {
       owner: req.userId,
       isDeleted: false,
     };
 
+    //optional
+    if (req.query.type && req.query.type !== 'All') {
+        // This maps your frontend "PDFs", "Images" to mime types or resourceTypes
+        if (req.query.type === 'Images') query.resourceType = 'image';
+        else if (req.query.type === 'Videos') query.resourceType = 'video';
+        else if (req.query.type === 'PDFs') query.mimeType = 'application/pdf';
+        
+    }
+
     const totalFiles = await File.countDocuments(query);
 
     const files = await File.find(query)
-      .sort({ createdAt: -1 })
+      .sort(sortOptions)
       .skip(skip)
       .limit(limit);
 
@@ -212,6 +233,36 @@ export const getTrashFiles = async (req, res) => {
 
     res.json({ files });
   } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const emptyTrash = async (req, res) => {
+  try {
+    // Debugging: Log the user ID to ensure auth is working
+    console.log("Attempting to empty trash for user:", req.userId);
+
+    // Check if userId exists (crucial for security)
+    if (!req.userId) {
+      return res.status(401).json({ msg: "User ID missing from request" });
+    }
+
+    // specific query: match owner AND isDeleted status
+    const result = await File.deleteMany({
+      owner: req.userId,
+      isDeleted: true
+    });
+
+    console.log("Deleted count:", result.deletedCount);
+
+    res.status(200).json({ 
+      msg: "Trash emptied successfully", 
+      deletedCount: result.deletedCount 
+    });
+
+  } catch (err) {
+    // Log the actual error to the terminal so we can see it
+    console.error("CRITICAL ERROR in emptyTrash:", err); 
     res.status(500).json({ error: err.message });
   }
 };

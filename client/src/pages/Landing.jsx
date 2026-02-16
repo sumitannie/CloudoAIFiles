@@ -14,14 +14,14 @@ export default function Landing() {
 
   return (
     <div className="landing-container">
-      {/* Decorative blobs */}
+
       <div className="blob blob-1"></div>
       <div className="blob blob-2"></div>
 
       <div className="landing-content">
         {/* Hero */}
         <h1 className="landing-title">
-          Cloudo<span>Files</span>AI
+          Cloudo<span>AI</span>Files
         </h1>
 
         <p className="landing-subtitle">
@@ -40,11 +40,10 @@ export default function Landing() {
         <div className="features-grid">
           <div className="feature-card">
             <span className="feature-icon">🧠</span>
-            <h3>AI Auto Collections</h3>
+            <h3>AI Auto Folders</h3>
             <p>
-              Automatically groups files into Job Documents, Certificates,
-              Study Materials, Media, Important, and Recent using intelligent
-              metadata analysis.
+              Powered by advanced LLMs, CloudoAIFiles reads and understands the actual content of your documents and puts them into intelligent, 
+              context-aware folder categories. No manual folder-creation required.
             </p>
           </div>
 
