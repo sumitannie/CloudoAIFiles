@@ -12,6 +12,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Keep-alive route
+app.get("/ping", (req, res) => {
+  res.send("Pong! Server is awake.");
+});
+
 // Test route
 app.get("/", (req, res) => {
   res.send("CloudoFilesAI Backend Running");
@@ -26,7 +31,10 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB Connected");
-    app.listen(5000, () => console.log("Server started on port 5000"));
+    
+    const PORT = process.env.PORT || 5000;
+    
+    app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
   })
   .catch((err) => console.log(err));
 
