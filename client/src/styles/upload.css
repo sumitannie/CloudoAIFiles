@@ -70,3 +70,19 @@
   border-radius: var(--radius-md);
   cursor: pointer;
 }
+
+@media (max-width: 768px) {
+  .upload-dropzone {
+    padding: var(--spacing-lg);
+  }
+
+  .file-item-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .file-item-info span {
+    font-size: 0.85rem;
+  }
+}

@@ -12,9 +12,35 @@
   font-weight: 700;
 }
 
-/* =========================
-   AUTO COLLECTIONS
-========================= */
+.folder-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.folder-breadcrumb button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: var(--text-primary); 
+  font-weight: 600;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+}
+
+.folder-breadcrumb button:hover {
+  background: var(--bg-gray);
+  color: var(--color-primary);
+}
+
+.folder-breadcrumb span {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
 .auto-collections {
   display: flex;
   flex-wrap: wrap;
@@ -39,6 +65,13 @@
   color: var(--text-secondary);
   cursor: pointer;
   transition: all var(--transition-fast);
+  
+}
+
+:root[data-theme="dark"] .auto-collections button {
+  color: var(--text-primary); /* Forces white text */
+  background: var(--bg-gray);
+  border-color: var(--border-medium);
 }
 
 .auto-collections button:hover {
@@ -64,9 +97,6 @@
   border-style: solid;
 }
 
-/* =========================
-   DASHBOARD CONTROLS
-========================= */
 .dashboard-controls {
   display: flex;
   gap: var(--spacing-md);
@@ -115,18 +145,12 @@
   border-color: var(--color-primary);
 }
 
-/* =========================
-   FILES GRID
-========================= */
 .files-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: var(--spacing-lg);
 }
 
-/* =========================
-   PAGINATION
-========================= */
 .pagination {
   margin-top: var(--spacing-xl);
   display: flex;
@@ -164,9 +188,6 @@
   align-items: center;
 }
 
-/* =========================
-   STATES
-========================= */
 .error {
   color: var(--color-danger);
 }
@@ -176,29 +197,44 @@
   color: var(--text-secondary);
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
 @media (max-width: 768px) {
+  .dashboard-header h1 {
+    font-size: 1.5rem;
+  }
+
   .auto-collections {
     padding: var(--spacing-sm);
+    overflow-x: auto;
+    flex-wrap: nowrap;
   }
 
   .auto-collections button {
     font-size: 0.8rem;
     padding: var(--spacing-xs) var(--spacing-sm);
+    white-space: nowrap;
   }
 
   .dashboard-controls {
     flex-direction: column;
+    gap: var(--spacing-sm);
   }
 
   .dashboard-controls input {
     min-width: 100%;
+    width: 100%;
+  }
+
+  .dashboard-controls select {
+    width: 100%;
   }
 
   .files-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: var(--spacing-md);
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
   }
 }

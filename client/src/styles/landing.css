@@ -1,6 +1,3 @@
-/* =========================
-   LANDING PAGE
-========================= */
 .landing-container {
   min-height: 100vh;
   display: flex;
@@ -21,9 +18,6 @@
   animation: fadeInUp 1s ease-out;
 }
 
-/* =========================
-   TITLE
-========================= */
 .landing-title {
   font-size: 4rem;
   font-weight: 800;
@@ -43,9 +37,6 @@
   background-size: 200% 200%;
 }
 
-/* =========================
-   SUBTITLE
-========================= */
 .landing-subtitle {
   font-size: 1.25rem;
   color: rgba(255, 255, 255, 0.7);
@@ -58,9 +49,6 @@
   animation: fadeInUp 1s ease-out 0.2s both;
 }
 
-/* =========================
-   GET STARTED BUTTON
-========================= */
 .get-started-btn {
   padding: var(--spacing-md) var(--spacing-2xl);
   font-size: 1.125rem;
@@ -111,9 +99,6 @@
   transform: translateY(-2px) scale(1);
 }
 
-/* =========================
-   FEATURE CARDS GRID
-========================= */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -232,9 +217,6 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
-/* =========================
-   DECORATIVE BLOBS
-========================= */
 .blob {
   position: absolute;
   border-radius: 50%;
@@ -261,9 +243,6 @@
   animation-delay: -4s;
 }
 
-/* =========================
-   ANIMATIONS
-========================= */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -317,9 +296,6 @@
   }
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
 @media (max-width: 768px) {
   .landing-container {
     padding: var(--spacing-lg) var(--spacing-sm);

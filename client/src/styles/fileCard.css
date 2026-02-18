@@ -16,14 +16,13 @@
   transform: translateY(-2px);
 }
 
-/* ---------- ICON ---------- */
 .file-icon {
   font-size: 2.5rem;
 }
 
-/* ---------- INFO ---------- */
 .file-info {
   flex: 1;
+  min-width: 0;
 }
 
 .file-name {
@@ -41,7 +40,6 @@
   color: var(--text-muted);
 }
 
-/* ---------- ACTIONS ---------- */
 .file-actions {
   display: flex;
   gap: var(--spacing-sm);
@@ -57,7 +55,6 @@
   transition: background var(--transition-fast), color var(--transition-fast);
 }
 
-/* Primary action (Open / Restore) */
 .file-actions button:first-child {
   background: var(--color-primary);
   color: white;
@@ -67,7 +64,6 @@
   background: var(--color-primary-hover);
 }
 
-/* Delete / Delete forever */
 .btn-delete {
   background: var(--bg-gray);
   color: var(--color-danger);
@@ -77,17 +73,11 @@
   background: rgba(239, 68, 68, 0.12);
 }
 
-/* =========================
-   TRASH MODE STYLES
-   ========================= */
-
-/* When file is in trash (optional class) */
 .file-card.trash {
   border-color: rgba(239, 68, 68, 0.3);
   background: #fffafa;
 }
 
-/* Trash badge */
 .file-card.trash::before {
   content: "🗑️ Trashed";
   position: absolute;
@@ -101,7 +91,6 @@
   font-weight: 500;
 }
 
-/* Restore button (when in trash) */
 .file-card.trash .file-actions button:first-child {
   background: #e8f7ee;
   color: #1b7f4b;
@@ -112,7 +101,6 @@
   color: white;
 }
 
-/* Delete forever button */
 .file-card.trash .btn-delete {
   background: rgba(239, 68, 68, 0.1);
   color: var(--color-danger);
@@ -121,4 +109,23 @@
 .file-card.trash .btn-delete:hover {
   background: var(--color-danger);
   color: white;
+}
+
+@media (max-width: 768px) {
+  .file-card {
+    padding: var(--spacing-md);
+  }
+  
+  .file-icon {
+    font-size: 2rem;
+  }
+  
+  .file-name {
+    font-size: 0.85rem;
+  }
+  
+  .file-actions button {
+    padding: 6px 4px;
+    font-size: 0.7rem;
+  }
 }

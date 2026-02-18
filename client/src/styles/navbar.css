@@ -24,3 +24,17 @@
   font-size: 0.875rem;
   color: var(--text-secondary);
 }
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 var(--spacing-md);
+  }
+
+  .navbar-title h3 {
+    font-size: 1rem;
+  }
+
+  .navbar-user {
+    display: none;
+  }
+}

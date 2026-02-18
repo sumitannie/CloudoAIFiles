@@ -206,9 +206,10 @@ npm run dev
 ![alt text](<Screenshot (996).png>)
 ![alt text](<Screenshot (993).png>)
 ![alt text](<Screenshot (994).png>)
-![alt text](<Screenshot (995).png>)
+![alt text](<Screenshot (1026).png>)
 ![alt text](<Screenshot (997)-1.png>)
-
+![alt text](<Screenshot (1025).png>)
+![alt text](<Screenshot (1027).png>)
 ---
 
 ## 🚀 Future Improvements

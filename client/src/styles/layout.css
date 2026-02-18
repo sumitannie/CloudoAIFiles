@@ -19,8 +19,13 @@
 }
 
 @media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+  
   .main-content {
     margin-left: 0;
+    margin-bottom: 70px;
   }
 
   .content-area {

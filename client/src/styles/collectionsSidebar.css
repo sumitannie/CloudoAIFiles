@@ -1,6 +1,3 @@
-/* =========================
-   AI COLLECTIONS SIDEBAR
-========================= */
 .collections-sidebar {
   display: flex;
   flex-direction: column;
@@ -34,7 +31,7 @@
   background: var(--bg-white);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
-  color: var(--text-secondary);
+  color: var(--text-secondary); /* Default for Light Mode */
   cursor: pointer;
   transition: all var(--transition-fast);
   text-align: left;
@@ -93,28 +90,48 @@
   transform: translateX(0);
 }
 
-/* =========================
-   DARK MODE
-========================= */
 :root[data-theme="dark"] .collections-sidebar {
   background: var(--gradient-card);
 }
 
-:root[data-theme="dark"] .collections-sidebar button.active {
-  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+:root[data-theme="dark"] .collections-sidebar button {
+  color: var(--text-primary); /* ✅ Forces white text */
+  background: var(--bg-gray); /* Slightly lighter bg for visibility */
+  border-color: var(--border-medium);
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+:root[data-theme="dark"] .collections-sidebar button:hover {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+:root[data-theme="dark"] .collections-sidebar button.active {
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+  color: white;
+}
+
+
 @media (max-width: 768px) {
   .collections-sidebar {
     padding: var(--spacing-md);
+    flex-direction: row;
+    overflow-x: auto;
+    white-space: nowrap;
+    align-items: center;
+  }
+
+  .collections-sidebar h4 {
+    display: none;
   }
 
   .collections-sidebar button {
     font-size: 0.8rem;
     padding: var(--spacing-xs) var(--spacing-sm);
+    flex-shrink: 0;
+  }
+
+  .collections-sidebar button:hover {
+    transform: none;
   }
 
   .collections-sidebar button span {
